@@ -21,6 +21,16 @@ const Banner = () => {
             Post an Emergency
           </button>
         </Link>
+        <Link to="/emergencylist">
+  <button className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-xl text-lg">
+    View Emergencies
+  </button>
+</Link>
+<Link to="/donorlist">
+  <button className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-xl text-lg">
+    View Donors
+  </button>
+</Link>
         </div>
     </div>
   )

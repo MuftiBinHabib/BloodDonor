@@ -1,0 +1,52 @@
+import React, { useEffect, useState } from 'react';
+import { getDatabase, ref, onValue } from 'firebase/database';
+
+const DonorList = () => {
+  const [donors, setDonors] = useState([]);
+
+  useEffect(() => {
+    const db = getDatabase();
+    const donorsRef = ref(db, 'blooddonor/');
+
+    const unsubscribe = onValue(donorsRef, (snapshot) => {
+      const data = snapshot.val();
+      const loadedDonors = [];
+
+      if (data) {
+        Object.keys(data).forEach((key) => {
+          loadedDonors.push({
+            id: key,
+            ...data[key].blood
+          });
+        });
+      }
+
+      setDonors(loadedDonors);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <div className="container mx-auto p-4">
+      <h2 className="text-2xl mb-4 font-bold">Registered Donors</h2>
+
+      {donors.length === 0 ? (
+        <p>No donors registered yet.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {donors.map((donor) => (
+            <div key={donor.id} className="border p-4 rounded shadow">
+              <p><strong>Name:</strong> {donor.name}</p>
+              <p><strong>Blood Group:</strong> {donor.bloodGroup}</p>
+              <p><strong>Location:</strong> {donor.location}</p>
+              <p><strong>Phone:</strong> {donor.phone}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default DonorList;

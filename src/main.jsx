@@ -11,6 +11,8 @@ import About from './components/About.jsx';
 import Banner from './components/Banner.jsx';
 import RegisterDonor from './components/RegisterDonor.jsx';
 import PostRequest from './components/PostRequest.jsx';
+import EmergencyList from './components/EmergencyList.jsx';
+import DonorList from './components/DonorList.jsx';
 
 
 
@@ -35,10 +37,20 @@ const router = createBrowserRouter([
       path: "/request",
       element: <PostRequest />
     },
+    {
+      path: "/emergencylist",
+      element: <EmergencyList />,
+    },
+    {
+      path: "/donorlist",
+      element: <DonorList />,
+    },
+
   ]
   },
 ]);
 
 createRoot(document.getElementById('root')).render(
   <RouterProvider router={router} />
+  
 )
