@@ -8,6 +8,8 @@ import {
 } from "react-router";
 import Header from './components/Header.jsx';
 import About from './components/About.jsx';
+import Banner from './components/Banner.jsx';
+import RegisterDonor from './components/RegisterDonor.jsx';
 
 
 
@@ -15,10 +17,24 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Header />,
-    children:[{
+    children:[
+      {
+        index: "/",
+        element: <Banner />,
+      },
+      {
       path: "about",
       element: <About />,
-    }]
+    },
+    {
+      path: "/register",
+      element: <RegisterDonor />
+    },
+    // {
+    //   path: "/request",
+    //   element: <PostRequest />
+    // }
+  ]
   },
 ]);
 
