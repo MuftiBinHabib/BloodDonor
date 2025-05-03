@@ -18,7 +18,7 @@ const RegisterDonor = () => {
     e.preventDefault();
     // ✅ Simulate saving to a backend
     const db = getDatabase();
-  set(push(ref(db, 'blood/' )), {
+  set(push(ref(db, 'blooddonor/' )), {
     blood:formData
   });
     alert("✅ (Simulated) Registered as a donor! Check console for data.");

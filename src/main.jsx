@@ -10,6 +10,7 @@ import Header from './components/Header.jsx';
 import About from './components/About.jsx';
 import Banner from './components/Banner.jsx';
 import RegisterDonor from './components/RegisterDonor.jsx';
+import PostRequest from './components/PostRequest.jsx';
 
 
 
@@ -30,10 +31,10 @@ const router = createBrowserRouter([
       path: "/register",
       element: <RegisterDonor />
     },
-    // {
-    //   path: "/request",
-    //   element: <PostRequest />
-    // }
+    {
+      path: "/request",
+      element: <PostRequest />
+    },
   ]
   },
 ]);
