@@ -3,12 +3,14 @@ import { getDatabase, ref, onValue } from 'firebase/database';
 
 const DonorList = () => {
   const [donors, setDonors] = useState([]);
+  const [neededBloodGroups, setNeededBloodGroups] = useState([]);
 
   useEffect(() => {
     const db = getDatabase();
-    const donorsRef = ref(db, 'blooddonor/');
 
-    const unsubscribe = onValue(donorsRef, (snapshot) => {
+    // Fetch donors
+    const donorsRef = ref(db, 'blooddonor/');
+    const donorsUnsubscribe = onValue(donorsRef, (snapshot) => {
       const data = snapshot.val();
       const loadedDonors = [];
 
@@ -16,7 +18,7 @@ const DonorList = () => {
         Object.keys(data).forEach((key) => {
           loadedDonors.push({
             id: key,
-            ...data[key].blood
+            ...data[key].blood,
           });
         });
       }
@@ -24,7 +26,29 @@ const DonorList = () => {
       setDonors(loadedDonors);
     });
 
-    return () => unsubscribe();
+    // Fetch emergency requests
+    const emergencyRef = ref(db, 'emergency/');
+    const emergencyUnsubscribe = onValue(emergencyRef, (snapshot) => {
+      const data = snapshot.val();
+      const bloodGroups = [];
+
+      if (data) {
+        Object.keys(data).forEach((key) => {
+          const emergency = data[key].emergency;
+          if (emergency && emergency.neededBloodGroup) {
+            bloodGroups.push(emergency.neededBloodGroup);
+          }
+        });
+      }
+
+      setNeededBloodGroups([...new Set(bloodGroups)]); // Remove duplicates
+    });
+
+    // Cleanup
+    return () => {
+      donorsUnsubscribe();
+      emergencyUnsubscribe();
+    };
   }, []);
 
   return (
@@ -35,14 +59,31 @@ const DonorList = () => {
         <p>No donors registered yet.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {donors.map((donor) => (
-            <div key={donor.id} className="border p-4 rounded shadow">
-              <p><strong>Name:</strong> {donor.name}</p>
-              <p><strong>Blood Group:</strong> {donor.bloodGroup}</p>
-              <p><strong>Location:</strong> {donor.location}</p>
-              <p><strong>Phone:</strong> {donor.phone}</p>
-            </div>
-          ))}
+          {donors.map((donor) => {
+            const isMatch = neededBloodGroups.includes(donor.bloodGroup);
+
+            return (
+              <div
+                key={donor.id}
+                className={`border p-4 rounded shadow transition duration-300 ${
+                  isMatch ? '' : 'blur-sm'
+                }`}
+              >
+                <p>
+                  <strong>Name:</strong> {donor.name}
+                </p>
+                <p>
+                  <strong>Blood Group:</strong> {donor.bloodGroup}
+                </p>
+                <p>
+                  <strong>Location:</strong> {donor.location}
+                </p>
+                <p>
+                  <strong>Phone:</strong> {donor.phone}
+                </p>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
