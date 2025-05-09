@@ -5,7 +5,7 @@ const Banner = () => {
   return (
     <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold mb-4 text-center md:text-left">
-          Find Blood Donors Fast in Emergencies
+          Find Blood Donors Fas in Emergencies
         </h1>
         <p className="text-lg mb-8 text-gray-600 text-center md:text-left">
           Instantly connect with nearby donors by blood group and location to save lives when it matters most.

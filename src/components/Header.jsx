@@ -8,7 +8,7 @@ const Header = () => {
     <div className="container">
 
       <section className='flex justify-between'>
-        <h2><Link to="/"><FaBriefcaseMedical /></Link></h2>
+        <h2 className='mx-auto text-2xl'><Link to="/"><FaBriefcaseMedical /></Link></h2>
         
 
     
