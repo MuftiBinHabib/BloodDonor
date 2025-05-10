@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue, remove } from 'firebase/database';
 
 const EmergencyList = () => {
   const [requests, setRequests] = useState([]);
@@ -11,20 +11,30 @@ const EmergencyList = () => {
     const unsubscribe = onValue(requestsRef, (snapshot) => {
       const data = snapshot.val();
       const loadedRequests = [];
+      const now = Date.now();
+      const VALID_DURATION = 6 * 1000; // 6 seconds
 
       if (data) {
         Object.keys(data).forEach((key) => {
-          loadedRequests.push({
-            id: key,
-            ...data[key].emergency
-          });
+          const request = data[key].emergency;
+          const timestamp = request?.timestamp;
+
+          if (timestamp && now - timestamp <= VALID_DURATION) {
+            loadedRequests.push({
+              id: key,
+              ...request,
+            });
+          } else if (timestamp) {
+            // ❌ Delete expired request from database
+            const expiredRef = ref(db, `emergency/${key}`);
+            remove(expiredRef);
+          }
         });
       }
 
       setRequests(loadedRequests);
     });
 
-    // Cleanup the listener when component unmounts
     return () => unsubscribe();
   }, []);
 
@@ -42,6 +52,7 @@ const EmergencyList = () => {
               <p><strong>Blood Group:</strong> {req.neededBloodGroup}</p>
               <p><strong>Location:</strong> {req.location}</p>
               <p><strong>Contact:</strong> {req.contactInfo}</p>
+              <p><strong>Posted:</strong> {new Date(req.timestamp).toLocaleString()}</p>
             </div>
           ))}
         </div>

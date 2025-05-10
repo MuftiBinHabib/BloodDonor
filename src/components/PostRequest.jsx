@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { getDatabase, ref, set, push } from "firebase/database";
+import { getDatabase, ref, push } from "firebase/database"; // ✅ `set` not needed
 
 const PostRequest = () => {
-  const [fomData, setFormData] = useState({
+  const [formData, setFormData] = useState({
     patientName: '',
     neededBloodGroup: '',
     location: '',
@@ -10,22 +10,25 @@ const PostRequest = () => {
   });
 
   const handleChange = (e) => {
-    setFormData({ ...fomData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value }); // ✅ typo fixed: fomData ➜ formData
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const db = getDatabase();
-    set(push(ref(db, 'emergency/')), {
-      emergency: fomData 
+    const emergencyRef = ref(db, 'emergency/');
+
+    // ✅ Push form data with timestamp
+    push(emergencyRef, {
+      emergency: {
+        ...formData,
+        timestamp: Date.now(), // ⏰ add timestamp here
+      },
     });
 
-    // Placeholder: Handle the form data (send to API or log)
-    console.log("Request submitted:", fomData);
-
     alert('Emergency request submitted!');
-    
-    // Optionally reset the form
+
+    // Clear form
     setFormData({
       patientName: '',
       neededBloodGroup: '',
@@ -40,7 +43,7 @@ const PostRequest = () => {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           name="patientName"
-          value={fomData.patientName}
+          value={formData.patientName}
           onChange={handleChange}
           placeholder="Patient Name"
           required
@@ -48,7 +51,7 @@ const PostRequest = () => {
         />
         <input
           name="neededBloodGroup"
-          value={fomData.neededBloodGroup}
+          value={formData.neededBloodGroup}
           onChange={handleChange}
           placeholder="Needed Blood Group"
           required
@@ -56,7 +59,7 @@ const PostRequest = () => {
         />
         <input
           name="location"
-          value={fomData.location}
+          value={formData.location}
           onChange={handleChange}
           placeholder="Location"
           required
@@ -64,7 +67,7 @@ const PostRequest = () => {
         />
         <input
           name="contactInfo"
-          value={fomData.contactInfo}
+          value={formData.contactInfo}
           onChange={handleChange}
           placeholder="Contact Info"
           required

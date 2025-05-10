@@ -26,16 +26,24 @@ const DonorList = () => {
       setDonors(loadedDonors);
     });
 
-    // Fetch emergency requests
+    // Fetch emergency requests (filtering out expired ones)
     const emergencyRef = ref(db, 'emergency/');
     const emergencyUnsubscribe = onValue(emergencyRef, (snapshot) => {
       const data = snapshot.val();
       const bloodGroups = [];
 
+      const now = Date.now();
+      const VALID_DURATION = 6 * 60 * 60 * 1000; // 6 hours
+
       if (data) {
         Object.keys(data).forEach((key) => {
           const emergency = data[key].emergency;
-          if (emergency && emergency.neededBloodGroup) {
+          if (
+            emergency &&
+            emergency.neededBloodGroup &&
+            emergency.timestamp &&
+            now - emergency.timestamp <= VALID_DURATION
+          ) {
             bloodGroups.push(emergency.neededBloodGroup);
           }
         });
@@ -66,7 +74,7 @@ const DonorList = () => {
               <div
                 key={donor.id}
                 className={`border p-4 rounded shadow transition duration-300 ${
-                  isMatch ? '' : 'blur-sm'
+                  isMatch ? '' : 'blur-sm opacity-50'
                 }`}
               >
                 <p>
