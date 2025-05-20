@@ -1,19 +1,19 @@
-// Import the functions you need from the SDKs you need
+// src/firebase.js
 import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getDatabase } from "firebase/database";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyB2votxKLrCnMUCymiEuDHn_2e7mzTH6iY",
   authDomain: "blooddonor-9213e.firebaseapp.com",
+  databaseURL: "https://blooddonor-9213e-default-rtdb.firebaseio.com", // Important!
   projectId: "blooddonor-9213e",
-  storageBucket: "blooddonor-9213e.firebasestorage.app",
+  storageBucket: "blooddonor-9213e.appspot.com",
   messagingSenderId: "192147208429",
   appId: "1:192147208429:web:b87a15a67c74c04b5474e4"
 };
 
-// Initialize Firebase
+// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-export default firebaseConfig
+// ✅ Export the initialized database
+export const db = getDatabase(app);

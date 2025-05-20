@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import firebaseConfig from './firebase';
-import { getDatabase, ref, set , push } from "firebase/database";
+import { getDatabase, ref, push } from "firebase/database";
+import { validBloodGroups } from './constants';
 
 const RegisterDonor = () => {
   const [formData, setFormData] = useState({
@@ -16,13 +16,18 @@ const RegisterDonor = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // ✅ Simulate saving to a backend
+
+    if (!validBloodGroups.includes(formData.bloodGroup)) {
+      alert('❌ Please select a valid blood group.');
+      return;
+    }
+
     const db = getDatabase();
-  set(push(ref(db, 'blooddonor/' )), {
-    blood:formData
-  });
-    alert("✅ (Simulated) Registered as a donor! Check console for data.");
-    // Reset form
+    push(ref(db, 'blooddonor/'), {
+      blood: formData
+    });
+
+    alert("✅ Registered as a donor!");
     setFormData({ name: '', phone: '', bloodGroup: '', location: '' });
   };
 
@@ -46,14 +51,20 @@ const RegisterDonor = () => {
           required
           className="border p-2"
         />
-        <input
+        <select
           name="bloodGroup"
           value={formData.bloodGroup}
           onChange={handleChange}
-          placeholder="Blood Group (e.g., A+)"
           required
           className="border p-2"
-        />
+        >
+          <option value="">Select Blood Group</option>
+          {validBloodGroups.map((group) => (
+            <option key={group} value={group}>
+              {group}
+            </option>
+          ))}
+        </select>
         <input
           name="location"
           value={formData.location}

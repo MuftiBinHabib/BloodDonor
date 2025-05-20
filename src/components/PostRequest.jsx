@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { getDatabase, ref, push } from "firebase/database"; // ✅ `set` not needed
+import { getDatabase, ref, push } from "firebase/database";
+import { validBloodGroups } from './constants';
 
 const PostRequest = () => {
   const [formData, setFormData] = useState({
@@ -10,31 +11,28 @@ const PostRequest = () => {
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value }); // ✅ typo fixed: fomData ➜ formData
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validBloodGroups.includes(formData.neededBloodGroup)) {
+      alert('❌ Please select a valid blood group.');
+      return;
+    }
+
     const db = getDatabase();
     const emergencyRef = ref(db, 'emergency/');
-
-    // ✅ Push form data with timestamp
     push(emergencyRef, {
       emergency: {
         ...formData,
-        timestamp: Date.now(), // ⏰ add timestamp here
+        timestamp: Date.now(),
       },
     });
 
-    alert('Emergency request submitted!');
-
-    // Clear form
-    setFormData({
-      patientName: '',
-      neededBloodGroup: '',
-      location: '',
-      contactInfo: '',
-    });
+    alert('✅ Emergency request submitted!');
+    setFormData({ patientName: '', neededBloodGroup: '', location: '', contactInfo: '' });
   };
 
   return (
@@ -49,14 +47,22 @@ const PostRequest = () => {
           required
           className="border p-2"
         />
-        <input
+
+        <select
           name="neededBloodGroup"
           value={formData.neededBloodGroup}
           onChange={handleChange}
-          placeholder="Needed Blood Group"
           required
           className="border p-2"
-        />
+        >
+          <option value="">Select Blood Group</option>
+          {validBloodGroups.map((group) => (
+            <option key={group} value={group}>
+              {group}
+            </option>
+          ))}
+        </select>
+
         <input
           name="location"
           value={formData.location}

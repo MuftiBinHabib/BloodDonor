@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { ref, onValue } from 'firebase/database';
+import { db } from './firebase'; // ✅ Import initialized database
 
 const DonorList = () => {
   const [donors, setDonors] = useState([]);
   const [neededBloodGroups, setNeededBloodGroups] = useState([]);
 
   useEffect(() => {
-    const db = getDatabase();
-
-    // Fetch donors
     const donorsRef = ref(db, 'blooddonor/');
     const donorsUnsubscribe = onValue(donorsRef, (snapshot) => {
       const data = snapshot.val();
@@ -26,14 +24,13 @@ const DonorList = () => {
       setDonors(loadedDonors);
     });
 
-    // Fetch emergency requests (filtering out expired ones)
     const emergencyRef = ref(db, 'emergency/');
     const emergencyUnsubscribe = onValue(emergencyRef, (snapshot) => {
       const data = snapshot.val();
       const bloodGroups = [];
 
       const now = Date.now();
-      const VALID_DURATION = 6 * 60 * 60 * 1000; // 6 hours
+      const VALID_DURATION = 6 * 60 * 60 * 1000;
 
       if (data) {
         Object.keys(data).forEach((key) => {
@@ -49,10 +46,9 @@ const DonorList = () => {
         });
       }
 
-      setNeededBloodGroups([...new Set(bloodGroups)]); // Remove duplicates
+      setNeededBloodGroups([...new Set(bloodGroups)]);
     });
 
-    // Cleanup
     return () => {
       donorsUnsubscribe();
       emergencyUnsubscribe();
@@ -62,7 +58,6 @@ const DonorList = () => {
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl mb-4 font-bold">Registered Donors</h2>
-
       {donors.length === 0 ? (
         <p>No donors registered yet.</p>
       ) : (
@@ -77,18 +72,10 @@ const DonorList = () => {
                   isMatch ? '' : 'blur-sm opacity-50'
                 }`}
               >
-                <p>
-                  <strong>Name:</strong> {donor.name}
-                </p>
-                <p>
-                  <strong>Blood Group:</strong> {donor.bloodGroup}
-                </p>
-                <p>
-                  <strong>Location:</strong> {donor.location}
-                </p>
-                <p>
-                  <strong>Phone:</strong> {donor.phone}
-                </p>
+                <p><strong>Name:</strong> {donor.name}</p>
+                <p><strong>Blood Group:</strong> {donor.bloodGroup}</p>
+                <p><strong>Location:</strong> {donor.location}</p>
+                <p><strong>Phone:</strong> {donor.phone}</p>
               </div>
             );
           })}
