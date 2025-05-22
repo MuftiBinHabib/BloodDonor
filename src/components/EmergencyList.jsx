@@ -12,7 +12,7 @@ const EmergencyList = () => {
       const data = snapshot.val();
       const loadedRequests = [];
       const now = Date.now();
-      const VALID_DURATION = 6 * 1000; // 6 seconds
+      const VALID_DURATION = 7*24*60*60 * 1000; // 1 week
 
       if (data) {
         Object.keys(data).forEach((key) => {
