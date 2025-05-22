@@ -13,6 +13,7 @@ import RegisterDonor from './components/RegisterDonor.jsx';
 import PostRequest from './components/PostRequest.jsx';
 import EmergencyList from './components/EmergencyList.jsx';
 import DonorList from './components/DonorList.jsx';
+import AdminDashboard from './components/AdminDashboard.jsx';
 
 
 
@@ -45,6 +46,11 @@ const router = createBrowserRouter([
       path: "/donorlist",
       element: <DonorList />,
     },
+    {
+      path: "/admin",
+      element: <AdminDashboard />,
+    },
+
 
   ]
   },
